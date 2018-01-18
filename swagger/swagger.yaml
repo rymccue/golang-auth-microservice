@@ -1,0 +1,199 @@
+consumes:
+- application/json
+definitions:
+  LoginPayload:
+    example:
+      email: jamesbond@gmail.com
+      password: abcd1234
+    properties:
+      email:
+        example: jamesbond@gmail.com
+        format: email
+        maxLength: 400
+        minLength: 6
+        type: string
+      password:
+        example: abcd1234
+        maxLength: 100
+        minLength: 5
+        type: string
+    required:
+    - email
+    - password
+    title: LoginPayload
+    type: object
+  RegisterPayload:
+    example:
+      email: jamesbond@gmail.com
+      first_name: John
+      last_name: Doe
+      password: abcd1234
+    properties:
+      email:
+        example: jamesbond@gmail.com
+        format: email
+        maxLength: 150
+        minLength: 6
+        type: string
+      first_name:
+        example: John
+        maxLength: 200
+        minLength: 1
+        type: string
+      last_name:
+        example: Doe
+        maxLength: 200
+        minLength: 1
+        type: string
+      password:
+        example: abcd1234
+        maxLength: 100
+        minLength: 5
+        type: string
+    required:
+    - email
+    - password
+    - first_name
+    - last_name
+    title: RegisterPayload
+    type: object
+  Token:
+    description: A token (default view)
+    example:
+      token: In harum.
+    properties:
+      token:
+        description: A JWT token
+        example: In harum.
+        type: string
+    title: 'Mediatype identifier: application/vnd.token+json; view=default'
+    type: object
+  error:
+    description: Error response media type (default view)
+    example:
+      code: invalid_value
+      detail: Value of ID must be an integer
+      id: 3F1FKVRR
+      meta:
+        timestamp: 1.458609e+09
+      status: "400"
+    properties:
+      code:
+        description: an application-specific error code, expressed as a string value.
+        example: invalid_value
+        type: string
+      detail:
+        description: a human-readable explanation specific to this occurrence of the
+          problem.
+        example: Value of ID must be an integer
+        type: string
+      id:
+        description: a unique identifier for this particular occurrence of the problem.
+        example: 3F1FKVRR
+        type: string
+      meta:
+        additionalProperties: true
+        description: a meta object containing non-standard meta-information about
+          the error.
+        example:
+          timestamp: 1.458609e+09
+        type: object
+      status:
+        description: the HTTP status code applicable to this problem, expressed as
+          a string value.
+        example: "400"
+        type: string
+    title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: test@tester.com
+    name: Tester Test
+  description: An API which an Authentication API
+  title: The Authentication API
+  version: ""
+paths:
+  /api/auth/login:
+    post:
+      description: Sign a user in
+      operationId: authentication#login
+      parameters:
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/LoginPayload'
+      produces:
+      - application/vnd.goa.error
+      - application/vnd.token+json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Token'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
+      schemes:
+      - http
+      summary: login authentication
+      tags:
+      - authentication
+  /api/auth/register:
+    post:
+      description: Create a new user
+      operationId: authentication#register
+      parameters:
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/RegisterPayload'
+      produces:
+      - application/vnd.goa.error
+      - application/vnd.token+json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Token'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
+      schemes:
+      - http
+      summary: register authentication
+      tags:
+      - authentication
+  /swagger.json:
+    get:
+      operationId: swagger#/swagger.json
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      schemes:
+      - http
+      summary: Download swagger/swagger.json
+produces:
+- application/json
+responses:
+  InternalServerError:
+    description: Internal Server Error
+schemes:
+- http
+securityDefinitions:
+  jwt:
+    description: Use JWT to authenticate
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
